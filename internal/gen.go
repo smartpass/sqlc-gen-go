@@ -69,14 +69,13 @@ func (t *TmplCtx) codegenQueryMethod(q Query) string {
 	}
 
 	switch q.Cmd {
-	//case ":one":
-	//	if t.EmitPreparedQueries {
-	//		return "q.queryRow"
-	//	}
-	//	return db + ".QueryRowContext"
+	case ":one":
+		if t.EmitPreparedQueries {
+			return "q.queryRow"
+		}
+		return db + ".QueryRowContext"
 
-	// smartpass: treat :many and :one the same so that dbr.Load works
-	case ":many", ":one":
+	case ":many":
 		if t.EmitPreparedQueries {
 			return "q.query"
 		}
@@ -92,10 +91,9 @@ func (t *TmplCtx) codegenQueryMethod(q Query) string {
 
 func (t *TmplCtx) codegenQueryRetval(q Query) (string, error) {
 	switch q.Cmd {
-	//case ":one":
-	//	return "row :=", nil
-	// smartpass: treat :many and :one the same so that dbr.Load works
-	case ":many", ":one":
+	case ":one":
+		return "row :=", nil
+	case ":many":
 		return "rows, err :=", nil
 	case ":exec":
 		return "_, err :=", nil

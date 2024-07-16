@@ -408,8 +408,6 @@ func (i *importer) queryImports(filename string) fileImports {
 
 	// Have to include the database/sql package because part of the DB template is being used in query template
 	std["database/sql"] = struct{}{}
-	// Have to include this so that dbr.Load can be used
-	pkg[ImportSpec{Path: "github.com/gocraft/dbr/v2"}] = struct{}{}
 
 	return sortedImports(std, pkg)
 }

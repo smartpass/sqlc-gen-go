@@ -187,14 +187,11 @@ type {{.Ret.Type}} struct { {{- range .Ret.Struct.Fields}}
 {{end -}}
 func (q *{{$.InterfaceName}}RepositoryImpl) {{.ShortMethodName}}(ctx context.Context, {{ dbarg }} {{.Arg.Pair}}) ({{.Ret.DefineType}}, error) {
     {{- template "queryCodeStdExec" . }}
-	{{- if or (ne .Arg.Pair .Ret.Pair) (ne .Arg.DefineType .Ret.DefineType) }}
-	var {{.Ret.Name}} {{.Ret.DefineType}}
-	{{- end}}
-    if err != nil {
-        return {{.Ret.ReturnName}}, err
-    }
-	_, err = dbr.Load(rows, &{{.Ret.Name}})
-	return {{.Ret.ReturnName}}, err
+    {{- if or (ne .Arg.Pair .Ret.Pair) (ne .Arg.DefineType .Ret.DefineType) }}
+    var {{.Ret.Name}} {{.Ret.DefineType}}
+    {{- end}}
+    err := row.Scan({{.Ret.Scan}})
+    return {{.Ret.ReturnName}}, err
 }
 {{end}}
 
@@ -211,8 +208,20 @@ func (q *{{$.InterfaceName}}RepositoryImpl) {{.ShortMethodName}}(ctx context.Con
     {{else}}
     var items []{{.Ret.DefineType}}
     {{end -}}
-    _, err = dbr.Load(rows, &items)
-    return items, err
+    for rows.Next() {
+        var {{.Ret.Name}} {{.Ret.Type}}
+        if err := rows.Scan({{.Ret.Scan}}); err != nil {
+            return nil, err
+        }
+        items = append(items, {{.Ret.ReturnName}})
+    }
+    if err := rows.Close(); err != nil {
+        return nil, err
+    }
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+    return items, nil
 }
 {{end}}
 
