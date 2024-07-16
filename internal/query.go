@@ -102,6 +102,9 @@ func (v *QueryValue) DefineType() string {
 }
 
 func (v *QueryValue) ReturnName() string {
+	if v.IsPointer() {
+		return "&" + escape(v.Name)
+	}
 	return escape(v.Name)
 }
 

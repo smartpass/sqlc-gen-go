@@ -188,9 +188,14 @@ type {{.Ret.Type}} struct { {{- range .Ret.Struct.Fields}}
 func (q *{{$.InterfaceName}}RepositoryImpl) {{.ShortMethodName}}(ctx context.Context, {{ dbarg }} {{.Arg.Pair}}) ({{.Ret.DefineType}}, error) {
     {{- template "queryCodeStdExec" . }}
     {{- if or (ne .Arg.Pair .Ret.Pair) (ne .Arg.DefineType .Ret.DefineType) }}
-    var {{.Ret.Name}} {{.Ret.DefineType}}
+    var {{.Ret.Name}} {{.Ret.Type}}
     {{- end}}
     err := row.Scan({{.Ret.Scan}})
+    {{- if .Ret.IsPointer }}
+    if err == sql.ErrNoRows {
+		return nil, nil
+	}
+    {{- end}}
     return {{.Ret.ReturnName}}, err
 }
 {{end}}
