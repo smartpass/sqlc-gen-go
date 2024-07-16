@@ -104,7 +104,8 @@ func toCamelInitCase(name string, initUpper bool) string {
 			continue
 		}
 		if p == "id" {
-			out += "ID"
+			// Smartpass structs use Id instead of the default ID
+			out += "Id"
 		} else {
 			out += strings.Title(p)
 		}
