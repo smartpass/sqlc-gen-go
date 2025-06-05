@@ -19,7 +19,7 @@ func TestBuildQueriesWithFragments(t *testing.T) {
 		Queries: []*plugin.Query{
 			{
 				Name:     "GetActiveAuthor",
-				Cmd:      ":one", 
+				Cmd:      ":one",
 				Filename: "query.sql",
 				Text: `{{fragment:author_select}}
 {{fragment:active_filter}}
@@ -40,7 +40,7 @@ LIMIT 1;`,
 						Type: &plugin.Identifier{Name: "int4"},
 					},
 					{
-						Name: "name", 
+						Name: "name",
 						Type: &plugin.Identifier{Name: "text"},
 					},
 					{
@@ -54,7 +54,7 @@ LIMIT 1;`,
 
 	// Add some fragment definitions to simulate how they would appear in SQL
 	fragmentQuery := &plugin.Query{
-		Name:     "",  // Fragments don't have names
+		Name:     "", // Fragments don't have names
 		Cmd:      "",
 		Filename: "query.sql",
 		Text:     "-- fragment: author_select\nSELECT id, name, bio FROM authors\n\n-- fragment: active_filter\nWHERE deleted_at IS NULL",
@@ -62,10 +62,10 @@ LIMIT 1;`,
 	req.Queries = append([]*plugin.Query{fragmentQuery}, req.Queries...)
 
 	options := &opts.Options{
-		Package: "test",
+		Package:             "test",
 		QueryParameterLimit: func() *int32 { v := int32(1); return &v }(),
-		Initialisms: func() *[]string { v := []string{"id"}; return &v }(),
-		InitialismsMap: map[string]struct{}{"id": {}},
+		Initialisms:         func() *[]string { v := []string{"id"}; return &v }(),
+		InitialismsMap:      map[string]struct{}{"id": {}},
 	}
 
 	queries, err := buildQueries(req, options, []Struct{})

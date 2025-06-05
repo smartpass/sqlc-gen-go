@@ -64,14 +64,14 @@ LIMIT 1;`
 
 func TestUndefinedFragmentError(t *testing.T) {
 	registry := NewFragmentRegistry()
-	
+
 	sql := `SELECT * FROM users {{fragment:undefined_fragment}}`
-	
+
 	_, err := registry.SubstituteFragments(sql)
 	if err == nil {
 		t.Error("Expected error for undefined fragment, but got none")
 	}
-	
+
 	if err.Error() != "undefined fragment: undefined_fragment" {
 		t.Errorf("Expected 'undefined fragment: undefined_fragment', got '%s'", err.Error())
 	}
